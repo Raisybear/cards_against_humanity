@@ -5,7 +5,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building...'
-                // Führe den Docker-Build aus
+                // Führe den Docker-Build im Hauptverzeichnis aus
                 sh 'docker build -t cards_against_humanity_image:latest .'
             }
         }
