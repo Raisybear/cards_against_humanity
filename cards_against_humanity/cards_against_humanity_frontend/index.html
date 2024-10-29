@@ -1,9 +1,18 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body></body>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Test</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>CRUD Test</h1>
+        <input type="text" id="newItem" placeholder="Neues Item hinzufügen" />
+        <button onclick="createItem()">Erstellen</button>
+        <div class="item-list" id="itemList"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
 </html>
