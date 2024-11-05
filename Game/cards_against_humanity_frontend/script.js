@@ -1,5 +1,8 @@
-// Setze die URL des Backends auf den richtigen Port
-const apiUrl = "http://localhost:5000/api/test"; // Korrekte API-URL
+// Dynamische URL, abhängig von der Umgebung
+const apiUrl =
+  window.location.hostname === "localhost"
+    ? "http://localhost:5000/api/test" // Lokale Umgebung
+    : "http://backend:80/api/test"; // Container-Umgebung
 
 // Alle Items laden und anzeigen
 async function loadItems() {
