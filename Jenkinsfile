@@ -17,7 +17,7 @@ pipeline {
 
         stage('Backend Build') {
             steps {
-                dir('cards_against_humanity/cards_against_humanity_backend') {
+                dir('Game/cards_against_humanity_backend') {
                     script {
                         sh 'docker build -t ${BACKEND_IMAGE} .'  // Baut das Docker-Image für das Backend.
                     }
@@ -27,7 +27,7 @@ pipeline {
 
         stage('Frontend Build') {
             steps {
-                dir('cards_against_humanity/cards_against_humanity_frontend') {
+                dir('Game/cards_against_humanity_frontend') {
                     script {
                         sh 'docker build -t ${FRONTEND_IMAGE} .'  // Baut das Docker-Image für das Frontend.
                     }
@@ -38,11 +38,11 @@ pipeline {
         stage('Run Tests') {
             steps {
                 // Tests im Backend-Verzeichnis ausführen
-                dir('cards_against_humanity/cards_against_humanity_backend') {
+                dir('Game/cards_against_humanity_backend') {
                     sh 'dotnet test'  // Führt die Backend-Tests aus.
                 }
                 // Tests im Frontend-Verzeichnis ausführen
-                dir('cards_against_humanity/cards_against_humanity_frontend') {
+                dir('Game/cards_against_humanity_frontend') {
                     sh 'npm install && npm test'  // Führt die Frontend-Tests aus.
                 }
             }
