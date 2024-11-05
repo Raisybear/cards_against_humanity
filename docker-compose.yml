@@ -3,7 +3,7 @@ version: "3.8"
 services:
   backend:
     build:
-      context: ./cards_against_humanity/cards_against_humanity_backend
+      context: ./cards_against_humanity/cards_against_humanity_cards_against_humanity/cards_against_humanity_backend 
       dockerfile: Dockerfile
     ports:
       - "5000:80"
@@ -15,7 +15,7 @@ services:
 
   frontend:
     build:
-      context: ./cards_against_humanity/cards_against_humanity_frontend
+      context: ./frontend
       dockerfile: Dockerfile
     ports:
       - "3000:80"
