@@ -8,6 +8,8 @@ namespace cards_against_humanity_backend
     {
         public static void Main(string[] args)
         {
+            Console.WriteLine("Die Anwendung wurde gestartet und läuft im Docker-Container.");
+
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container

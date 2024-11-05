@@ -3,20 +3,19 @@ version: "3.8"
 services:
   backend:
     build:
-      context: ./backend
+      context: ./cards_against_humanity/cards_against_humanity_backend
       dockerfile: Dockerfile
     ports:
       - "5000:80"
     environment:
       ASPNETCORE_ENVIRONMENT: Development
-      # Verbindung zur MongoDB über den Dienstnamen "mongo"
       ConnectionStrings__MongoDB: "mongodb://mongadmin:12345678@mongo:27017/mydb?authSource=admin"
     depends_on:
       - mongo
 
   frontend:
     build:
-      context: ./frontend
+      context: ./cards_against_humanity/cards_against_humanity_frontend
       dockerfile: Dockerfile
     ports:
       - "3000:80"
