@@ -1,51 +1,55 @@
 pipeline {
-    agent any
+    agent any  // Der Agent, der für den Pipeline-Ausführungsprozess verwendet wird.
 
     environment {
-        BACKEND_IMAGE = "backend_image"  // Name des Backend-Images
-        FRONTEND_IMAGE = "frontend_image" // Name des Frontend-Images
+        BACKEND_IMAGE = "backend_image"  // Umgebungsvariable für das Backend-Image.
+        FRONTEND_IMAGE = "frontend_image"  // Umgebungsvariable für das Frontend-Image.
     }
 
     stages {
-        stage('Backend Build') {
+        stage('Checkout') {  // Erste Phase, um den Code aus dem Git-Repository zu klonen.
             steps {
-                dir('backend') {
+                sshagent(['github-ssh-key']) { // ID der SSH-Zugangsdaten, die du in Schritt 3 erstellt hast.
+                    sh 'git clone git@github.com:robinsacher/cards_against_humanity.git'
+                }
+            }
+        }
+
+        stage('Backend Build') {  // Phase, um das Backend zu bauen.
+            steps {
+                dir('backend') {  // Wechselt in das Verzeichnis des Backends.
                     script {
-                        // Backend Image bauen
-                        sh 'docker build -t ${BACKEND_IMAGE} .'
+                        sh 'docker build -t ${BACKEND_IMAGE} .'  // Baut das Docker-Image für das Backend.
                     }
                 }
             }
         }
 
-        stage('Frontend Build') {
+        stage('Frontend Build') {  // Phase, um das Frontend zu bauen.
             steps {
-                dir('frontend') {
+                dir('frontend') {  // Wechselt in das Verzeichnis des Frontends.
                     script {
-                        // Frontend Image bauen
-                        sh 'docker build -t ${FRONTEND_IMAGE} .'
+                        sh 'docker build -t ${FRONTEND_IMAGE} .'  // Baut das Docker-Image für das Frontend.
                     }
                 }
             }
         }
 
-        stage('Run Tests') {
+        stage('Run Tests') {  // Phase, um Tests für Backend und Frontend auszuführen.
             steps {
-                // Beispielhafte Tests für Backend und Frontend
                 dir('backend') {
-                    sh 'dotnet test'
+                    sh 'dotnet test'  // Führt die Backend-Tests aus.
                 }
                 dir('frontend') {
-                    sh 'npm install && npm test'
+                    sh 'npm install && npm test'  // Führt die Frontend-Tests aus.
                 }
             }
         }
 
-        stage('Deploy with Docker Compose') {
+        stage('Deploy with Docker Compose') {  // Phase für das Deployment mit Docker Compose.
             steps {
                 script {
-                    // Docker Compose Stack starten
-                    sh 'docker-compose -f docker-compose.yml up -d'
+                    sh 'docker-compose -f docker-compose.yml up -d'  // Startet die Container im Hintergrund.
                 }
             }
         }
@@ -53,8 +57,7 @@ pipeline {
 
     post {
         always {
-            // Container nach Abschluss der Pipeline herunterfahren
-            sh 'docker-compose -f docker-compose.yml down'
+            sh 'docker-compose -f docker-compose.yml down'  // Stoppt und entfernt die Container immer nach Abschluss der Pipeline.
         }
     }
 }
