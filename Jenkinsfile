@@ -1,36 +1,60 @@
 pipeline {
     agent any
 
+    environment {
+        BACKEND_IMAGE = "backend_image"  // Name des Backend-Images
+        FRONTEND_IMAGE = "frontend_image" // Name des Frontend-Images
+    }
+
     stages {
-        stage('Build') {
+        stage('Backend Build') {
             steps {
-                echo 'Building...'
-                // Führe den Docker-Build im Hauptverzeichnis aus
-                sh 'docker build -t cards_against_humanity_image:latest .'
+                dir('backend') {
+                    script {
+                        // Backend Image bauen
+                        sh 'docker build -t ${BACKEND_IMAGE} .'
+                    }
+                }
             }
         }
 
-        stage('Test') {
+        stage('Frontend Build') {
             steps {
-                echo 'Testing...'
-                // Beispiel für Tests, z.B. mit Docker
-                sh 'docker run --rm cards_against_humanity_image:latest pytest'
+                dir('frontend') {
+                    script {
+                        // Frontend Image bauen
+                        sh 'docker build -t ${FRONTEND_IMAGE} .'
+                    }
+                }
             }
         }
 
-        stage('Deploy') {
+        stage('Run Tests') {
             steps {
-                echo 'Deploying...'
-                // Optional: Push des Images zu einer Registry
-                // sh 'docker tag mein-image:latest myregistry.com/mein-image:latest'
-                // sh 'docker push myregistry.com/mein-image:latest'
+                // Beispielhafte Tests für Backend und Frontend
+                dir('backend') {
+                    sh 'dotnet test'
+                }
+                dir('frontend') {
+                    sh 'npm install && npm test'
+                }
+            }
+        }
+
+        stage('Deploy with Docker Compose') {
+            steps {
+                script {
+                    // Docker Compose Stack starten
+                    sh 'docker-compose -f docker-compose.yml up -d'
+                }
             }
         }
     }
 
     post {
         always {
-            echo 'Pipeline abgeschlossen!'
+            // Container nach Abschluss der Pipeline herunterfahren
+            sh 'docker-compose -f docker-compose.yml down'
         }
     }
 }
