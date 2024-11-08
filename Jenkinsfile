@@ -9,8 +9,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                sshagent(['github-ssh-key']) {
-                    sh 'git clone git@github.com:Raisybear/cards_against_humanity.git'
+                git branch: 'main', 
+                    url: 'https://github.com/Raisybear/cards_against_humanity'
                 }
             }
         }
