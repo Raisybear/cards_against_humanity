@@ -9,8 +9,13 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
+<<<<<<< HEAD
                 sshagent(['github-ssh-key']) {
                     sh 'git clone git@github.com:Raisybear/cards_against_humanity.git'
+=======
+                git branch: 'main', 
+                    url: 'https://github.com/robinsacher/cards_against_humanity'
+>>>>>>> 1b78db661930a5717854385e76bf12618e4dbc62
                 }
             }
         }
@@ -62,4 +67,3 @@ pipeline {
             sh 'docker-compose -f docker-compose.yml down'  // Stoppt und entfernt die Container nach Abschluss der Pipeline.
         }
     }
-}
