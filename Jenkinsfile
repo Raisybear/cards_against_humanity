@@ -1,7 +1,7 @@
 pipeline {
     agent any
     
-        tools {
+    tools {
         git 'git'  // Nutzt das Git-Tool von Jenkins
     }
 
@@ -15,7 +15,6 @@ pipeline {
             steps {
                 git branch: 'main', 
                     url: 'https://github.com/robinsacher/cards_against_humanity'
-                }
             }
         }
 
