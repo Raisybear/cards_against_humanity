@@ -1,5 +1,8 @@
 pipeline {
     agent any
+        tools {
+        git 'git'  // Nutzt das Git-Tool von Jenkins
+    }
     stages {
         stage('Checkout') {
             steps {
