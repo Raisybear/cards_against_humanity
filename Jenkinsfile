@@ -9,10 +9,11 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo 'Hello World'//git branch: 'main', url: 'https://github.com/robinsacher/cards_against_humanity'
+                git branch: 'main', url: 'https://github.com/robinsacher/cards_against_humanity'
+                }
             }
-        }
-
+        }   
+        
         stage('Backend Build') {
             steps {
                 dir('Game/cards_against_humanity_backend') {
@@ -60,4 +61,3 @@ pipeline {
             sh 'docker-compose -f docker-compose.yml down'  // Stoppt und entfernt die Container nach Abschluss der Pipeline.
         }
     }
-}
