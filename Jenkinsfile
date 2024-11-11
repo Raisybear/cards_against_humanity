@@ -13,7 +13,7 @@ pipeline {
                     url: 'https://github.com/robinsacher/cards_against_humanity'
                 }
             }
-        }
+        
 
         stage('Backend Build') {
             steps {
@@ -62,4 +62,4 @@ pipeline {
             sh 'docker-compose -f docker-compose.yml down'  // Stoppt und entfernt die Container nach Abschluss der Pipeline.
         }
     }
-
+}
