@@ -1,4 +1,4 @@
-pipeline 
+pipeline {
     agent any
 
     environment {
@@ -60,3 +60,4 @@ pipeline
             sh 'docker-compose -f docker-compose.yml down'  // Stoppt und entfernt die Container nach Abschluss der Pipeline.
         }
     }
+}
