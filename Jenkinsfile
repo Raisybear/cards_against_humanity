@@ -6,7 +6,13 @@ pipeline {
         FRONTEND_IMAGE = "frontend_image"
     }
 
-    stages {  
+    stages {
+        stage('Checkout') {
+            steps {
+                //git branch: 'main', url: 'https://github.com/robinsacher/cards_against_humanity'
+            }
+        }   
+  
         stage('Backend Build') {
             steps {
                 dir('Game/cards_against_humanity_backend') {
