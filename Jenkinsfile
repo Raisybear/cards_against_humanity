@@ -13,7 +13,8 @@ pipeline {
                 }
             }
         }   
-        
+
+    stages{    
         stage('Backend Build') {
             steps {
                 dir('Game/cards_against_humanity_backend') {
@@ -61,3 +62,4 @@ pipeline {
             sh 'docker-compose -f docker-compose.yml down'  // Stoppt und entfernt die Container nach Abschluss der Pipeline.
         }
     }
+}
