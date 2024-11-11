@@ -9,12 +9,11 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/robinsacher/cards_against_humanity'
-                }
+                //git branch: 'main', url: 'https://github.com/robinsacher/cards_against_humanity'
+                
             }
         }   
-
-    stages{    
+  
         stage('Backend Build') {
             steps {
                 dir('Game/cards_against_humanity_backend') {
