@@ -6,11 +6,7 @@ pipeline {
         FRONTEND_IMAGE = "frontend_image"
     }
 
-    stages {
-        stage('Checkout') {
-
-        }   
-  
+    stages {  
         stage('Backend Build') {
             steps {
                 dir('Game/cards_against_humanity_backend') {
