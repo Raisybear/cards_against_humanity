@@ -24,7 +24,7 @@ pipeline {
             }
         }
 
-        stage('Frontend Build') {
+/*         stage('Frontend Build') {
             steps {
                 dir('Game/cards_against_humanity_frontend') {
                     script {
@@ -55,6 +55,6 @@ pipeline {
                     sh 'docker-compose -f docker-compose.yml up -d'  // Startet die Container im Hintergrund.
                 }
             }
-        }
+        } */
     }
 }
