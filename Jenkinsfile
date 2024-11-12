@@ -54,10 +54,4 @@ pipeline {
             }
         }
     }
-
-    post {
-        always {
-            sh 'docker-compose -f docker-compose.yml down'  // Stoppt und entfernt die Container nach Abschluss der Pipeline.
-        }
-    }
 }
