@@ -7,12 +7,12 @@ pipeline {
     }
 
     stages {
-         stage('Checkout') {
+        stage('Checkout') {
             steps {
-                git url: 'https://github.com/Raisybear/cards_against_humanity.git', branch: 'main'
+                git branch: 'main', url: 'https://github.com/robinsacher/cards_against_humanity'
             }
-        }
-
+        }   
+  
         stage('Backend Build') {
             steps {
                 dir('Game/cards_against_humanity_backend') {
@@ -57,9 +57,7 @@ pipeline {
 
     post {
         always {
-            node('your-agent-label') {  // Füge hier das Label des Jenkins-Agents ein
-                sh 'docker-compose -f docker-compose.yml down'  // Stoppt und entfernt die Container nach Abschluss der Pipeline.
-            }
+            sh 'docker-compose -f docker-compose.yml down'  // Stoppt und entfernt die Container nach Abschluss der Pipeline.
         }
     }
 }
