@@ -17,6 +17,7 @@ pipeline {
             steps {
                 dir('Game/cards_against_humanity_backend') {
                     script {
+                        echo 'helloworld1'
                         sh 'docker build -t ${BACKEND_IMAGE} .'  // Baut das Docker-Image für das Backend.
                     }
                 }
@@ -27,6 +28,7 @@ pipeline {
             steps {
                 dir('Game/cards_against_humanity_frontend') {
                     script {
+                        echo 'helloworld2'
                         sh 'docker build -t ${FRONTEND_IMAGE} .'  // Baut das Docker-Image für das Frontend.
                     }
                 }
@@ -49,6 +51,7 @@ pipeline {
         stage('Deploy with Docker Compose') {
             steps {
                 script {
+                    echo 'helloworld3'
                     sh 'docker-compose -f docker-compose.yml up -d'  // Startet die Container im Hintergrund.
                 }
             }
