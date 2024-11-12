@@ -59,6 +59,8 @@ async function updateItem(id) {
       body: JSON.stringify(updatedItem),
     });
     if (response.ok) loadItems();
+
+    //fr
   } catch (error) {
     console.error("Fehler beim Aktualisieren des Items:", error);
   }
