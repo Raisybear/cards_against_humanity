@@ -1,7 +1,7 @@
 pipeline {
 
     agent any
-
+ 
     environment {
 
         BACKEND_IMAGE = "backend_image"
@@ -9,7 +9,7 @@ pipeline {
         FRONTEND_IMAGE = "frontend_image"
 
     }
-
+ 
     stages {
 
         stage('Checkout') {
@@ -24,17 +24,19 @@ pipeline {
 
             }
 
-        }  
-
+        }
+ 
         stage('Backend Build') {
 
             steps {
+
+                echo 'Entering Backend Build Directory'
 
                 dir('cards_against_humanity-main/Game/cards_against_humanity_backend') {
 
                     echo 'Starting Backend Build Stage'
 
-                    sh 'docker build -t ${BACKEND_IMAGE} .'  // Baut das Docker-Image für das Backend.
+                    sh 'docker build -t ${BACKEND_IMAGE} .'
 
                     echo 'Backend Docker Image Built Successfully'
 
@@ -43,16 +45,18 @@ pipeline {
             }
 
         }
-
+ 
         stage('Frontend Build') {
 
             steps {
+
+                echo 'Entering Frontend Build Directory'
 
                 dir('cards_against_humanity-main/Game/cards_against_humanity_frontend') {
 
                     echo 'Starting Frontend Build Stage'
 
-                    sh 'docker build -t ${FRONTEND_IMAGE} .'  // Baut das Docker-Image für das Frontend.
+                    sh 'docker build -t ${FRONTEND_IMAGE} .'
 
                     echo 'Frontend Docker Image Built Successfully'
 
@@ -61,16 +65,18 @@ pipeline {
             }
 
         }
-
+ 
         stage('Run Backend Tests') {
 
             steps {
+
+                echo 'Entering Backend Test Directory'
 
                 dir('cards_against_humanity-main/Game/cards_against_humanity_backend') {
 
                     echo 'Starting Backend Tests'
 
-                    sh 'dotnet test'  // Führt die Backend-Tests aus.
+                    sh 'dotnet test'
 
                     echo 'Backend Tests Completed Successfully'
 
@@ -79,16 +85,18 @@ pipeline {
             }
 
         }
-
+ 
         stage('Run Frontend Tests') {
 
             steps {
+
+                echo 'Entering Frontend Test Directory'
 
                 dir('cards_against_humanity-main/Game/cards_against_humanity_frontend') {
 
                     echo 'Starting Frontend Tests'
 
-                    sh 'npm install && npm test'  // Führt die Frontend-Tests aus.
+                    sh 'npm install && npm test'
 
                     echo 'Frontend Tests Completed Successfully'
 
@@ -97,20 +105,22 @@ pipeline {
             }
 
         }
-
+ 
         stage('Deploy with Docker Compose') {
 
             steps {
+
+                echo 'Entering Deployment Directory'
 
                 dir('cards_against_humanity-main') {
 
                     echo 'Starting Deployment with Docker Compose'
 
-                    sh 'docker-compose -f docker-compose.yml down'  // Stoppt alte Container
+                    sh 'docker-compose -f docker-compose.yml down || true'  // Stoppt alte Container (keine Fehler, falls nicht vorhanden)
 
                     echo 'Old Containers Stopped Successfully'
 
-                    sh 'docker-compose -f docker-compose.yml up -d'  // Startet die Container im Hintergrund.
+                    sh 'docker-compose -f docker-compose.yml up -d'
 
                     echo 'Deployment Completed Successfully'
 
@@ -126,11 +136,11 @@ pipeline {
 
         always {
 
-            echo 'Cleaning up...'
+            echo 'Starting Cleanup...'
 
             dir('cards_against_humanity-main') {
 
-                sh 'docker-compose -f docker-compose.yml down'  // Container bereinigen
+                sh 'docker-compose -f docker-compose.yml down || true'  // Container bereinigen (keine Fehler, falls nicht vorhanden)
 
                 echo 'Cleanup Completed Successfully'
 
