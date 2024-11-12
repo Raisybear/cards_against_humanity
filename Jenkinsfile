@@ -57,8 +57,7 @@ pipeline {
 
     post {
         always {
-            node {
-                // Docker Compose herunterfahren nach Abschluss der Pipeline
+            node('your-agent-label') {  // Füge hier das Label des Jenkins-Agents ein
                 sh 'docker-compose -f docker-compose.yml down'  // Stoppt und entfernt die Container nach Abschluss der Pipeline.
             }
         }
