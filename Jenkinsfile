@@ -16,7 +16,11 @@ pipeline {
 
             steps {
 
+                echo 'Starting Checkout Stage'
+
                 git branch: 'main', url: 'https://github.com/Raisybear/cards_against_humanity'
+
+                echo 'Checkout Stage Completed'
 
             }
 
@@ -30,13 +34,25 @@ pipeline {
 
                     steps {
 
-                        dir('Game/cards_against_humanity_backend') {
+                        dir('cards_against_humanity-main/Game/cards_against_humanity_backend') {
 
                             script {
 
-                                echo 'Building Backend Docker Image'
+                                echo 'Starting Backend Build Stage'
 
-                                sh 'docker build -t ${env.BACKEND_IMAGE} .'  // Baut das Docker-Image für das Backend.
+                                try {
+
+                                    sh 'docker build -t ${env.BACKEND_IMAGE} .'  // Baut das Docker-Image für das Backend.
+
+                                    echo 'Backend Docker Image Built Successfully'
+
+                                } catch (Exception e) {
+
+                                    echo "Error during Backend Build: ${e.message}"
+
+                                    throw e
+
+                                }
 
                             }
 
@@ -50,13 +66,25 @@ pipeline {
 
                     steps {
 
-                        dir('Game/cards_against_humanity_frontend') {
+                        dir('cards_against_humanity-main/Game/cards_against_humanity_frontend') {
 
                             script {
 
-                                echo 'Building Frontend Docker Image'
+                                echo 'Starting Frontend Build Stage'
 
-                                sh 'docker build -t ${env.FRONTEND_IMAGE} .'  // Baut das Docker-Image für das Frontend.
+                                try {
+
+                                    sh 'docker build -t ${env.FRONTEND_IMAGE} .'  // Baut das Docker-Image für das Frontend.
+
+                                    echo 'Frontend Docker Image Built Successfully'
+
+                                } catch (Exception e) {
+
+                                    echo "Error during Frontend Build: ${e.message}"
+
+                                    throw e
+
+                                }
 
                             }
 
@@ -78,13 +106,25 @@ pipeline {
 
                     steps {
 
-                        dir('Game/cards_against_humanity_backend') {
+                        dir('cards_against_humanity-main/Game/cards_against_humanity_backend') {
 
                             script {
 
-                                echo 'Running Backend Tests'
+                                echo 'Starting Backend Tests'
 
-                                sh 'dotnet test'  // Führt die Backend-Tests aus.
+                                try {
+
+                                    sh 'dotnet test'  // Führt die Backend-Tests aus.
+
+                                    echo 'Backend Tests Completed Successfully'
+
+                                } catch (Exception e) {
+
+                                    echo "Error during Backend Tests: ${e.message}"
+
+                                    throw e
+
+                                }
 
                             }
 
@@ -98,13 +138,25 @@ pipeline {
 
                     steps {
 
-                        dir('Game/cards_against_humanity_frontend') {
+                        dir('cards_against_humanity-main/Game/cards_against_humanity_frontend') {
 
                             script {
 
-                                echo 'Running Frontend Tests'
+                                echo 'Starting Frontend Tests'
 
-                                sh 'npm install && npm test'  // Führt die Frontend-Tests aus.
+                                try {
+
+                                    sh 'npm install && npm test'  // Führt die Frontend-Tests aus.
+
+                                    echo 'Frontend Tests Completed Successfully'
+
+                                } catch (Exception e) {
+
+                                    echo "Error during Frontend Tests: ${e.message}"
+
+                                    throw e
+
+                                }
 
                             }
 
@@ -122,13 +174,31 @@ pipeline {
 
             steps {
 
-                script {
+                dir('cards_against_humanity-main') {
 
-                    echo 'Deploying with Docker Compose'
+                    script {
 
-                    sh 'docker-compose -f docker-compose.yml down'  // Stoppt alte Container
+                        echo 'Starting Deployment with Docker Compose'
 
-                    sh 'docker-compose -f docker-compose.yml up -d'  // Startet die Container im Hintergrund.
+                        try {
+
+                            sh 'docker-compose -f docker-compose.yml down'  // Stoppt alte Container
+
+                            echo 'Old Containers Stopped Successfully'
+
+                            sh 'docker-compose -f docker-compose.yml up -d'  // Startet die Container im Hintergrund.
+
+                            echo 'Deployment Completed Successfully'
+
+                        } catch (Exception e) {
+
+                            echo "Error during Deployment: ${e.message}"
+
+                            throw e
+
+                        }
+
+                    }
 
                 }
 
@@ -144,7 +214,21 @@ pipeline {
 
             echo 'Cleaning up...'
 
-            sh 'docker-compose -f docker-compose.yml down'  // Container bereinigen
+            dir('cards_against_humanity-main') {
+
+                try {
+
+                    sh 'docker-compose -f docker-compose.yml down'  // Container bereinigen
+
+                    echo 'Cleanup Completed Successfully'
+
+                } catch (Exception e) {
+
+                    echo "Error during Cleanup: ${e.message}"
+
+                }
+
+            }
 
         }
 
