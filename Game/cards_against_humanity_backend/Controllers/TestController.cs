@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using cards_against_humanity_backend.Services;
+using cards_against_humanity_backend.Models;
 
 namespace cards_against_humanity_backend.Controllers
 {
@@ -7,61 +10,73 @@ namespace cards_against_humanity_backend.Controllers
     [ApiController]
     public class TestController : ControllerBase
     {
-        // In-Memory-Daten für Testzwecke
-        private static List<string> _items = new List<string> { "Item1", "Item2", "Item3" };
+        private readonly MongoDbService _mongoDbService;
+
+        public TestController(MongoDbService mongoDbService)
+        {
+            _mongoDbService = mongoDbService;
+        }
 
         // GET: api/test
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAll()
         {
-            return Ok(_items); // Gibt alle Items zurück
+            var items = await _mongoDbService.GetAllAsync();
+            return Ok(items);
         }
 
         // GET: api/test/{id}
         [HttpGet("{id}")]
-        public IActionResult GetById(int id)
+        public async Task<IActionResult> GetById(string id) // Ändere den Typ von int zu string
         {
-            if (id < 0 || id >= _items.Count)
-                return NotFound("Item not found"); // Falls das Item nicht existiert
+            var item = await _mongoDbService.GetAsync(id);
+            if (item == null)
+                return NotFound("Item not found");
 
-            return Ok(_items[id]); // Gibt das Item zurück
+            return Ok(item);
         }
 
         // POST: api/test
         [HttpPost]
-        public IActionResult Create([FromBody] string newItem)
+        public async Task<IActionResult> Create([FromBody] CreateItemRequest request)
         {
-            if (string.IsNullOrEmpty(newItem))
+            if (request == null || string.IsNullOrEmpty(request.Name))
                 return BadRequest("Item cannot be empty");
 
-            _items.Add(newItem);
-            return CreatedAtAction(nameof(GetById), new { id = _items.Count - 1 }, newItem); // Erstellt ein neues Item
+            var newItem = new Item { Name = request.Name }; // Id bleibt null und wird von MongoDB generiert
+            await _mongoDbService.CreateAsync(newItem);
+            return CreatedAtAction(nameof(GetById), new { id = newItem.Id }, newItem);
         }
-
+        
         // PUT: api/test/{id}
         [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] string updatedItem)
+        public async Task<IActionResult> Update(string id, [FromBody] UpdateItemRequest request)
         {
-            if (id < 0 || id >= _items.Count)
+            if (request == null || string.IsNullOrEmpty(request.Name))
+                return BadRequest("Name cannot be empty");
+
+            var existingItem = await _mongoDbService.GetAsync(id);
+            if (existingItem == null)
                 return NotFound("Item not found");
 
-            if (string.IsNullOrEmpty(updatedItem))
-                return BadRequest("Item cannot be empty");
+            // Aktualisiere nur das Feld "Name"
+            existingItem.Name = request.Name;
+            await _mongoDbService.UpdateAsync(id, existingItem);
 
-            _items[id] = updatedItem; // Aktualisiert das Item
-            return NoContent(); // Erfolgreiche Aktualisierung
+            return NoContent(); // Erfolgreiche Bearbeitung ohne Rückgabe
         }
 
+        
         // DELETE: api/test/{id}
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(string id) // Ändere den Typ von int zu string
         {
-            if (id < 0 || id >= _items.Count)
+            var item = await _mongoDbService.GetAsync(id);
+            if (item == null)
                 return NotFound("Item not found");
 
-            _items.RemoveAt(id); // Löscht das Item
-            return NoContent(); // Erfolgreiche Löschung
+            await _mongoDbService.DeleteAsync(id);
+            return NoContent();
         }
     }
-
 }

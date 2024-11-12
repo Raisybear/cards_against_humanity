@@ -16,14 +16,14 @@ async function loadItems() {
 function displayItems(items) {
   const itemList = document.getElementById("itemList");
   itemList.innerHTML = "";
-  items.forEach((item, index) => {
+  items.forEach((item) => {
     itemList.innerHTML += `
-            <div class="item">
-                <span>${item}</span>
-                <button onclick="updateItem(${index})">Bearbeiten</button>
-                <button onclick="deleteItem(${index})">Löschen</button>
-            </div>
-        `;
+      <div class="item">
+        <span>${item.name}</span> <!-- Ändere ${item} zu ${item.name}, um den Namen anzuzeigen -->
+        <button onclick="updateItem('${item.id}')">Bearbeiten</button>
+        <button onclick="deleteItem('${item.id}')">Löschen</button>
+      </div>
+    `;
   });
 }
 
@@ -36,11 +36,13 @@ async function createItem() {
     const response = await fetch(apiUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newItem),
+      body: JSON.stringify({ name: newItem }), // Nur "name" senden, kein "Id"
     });
     if (response.ok) {
       document.getElementById("newItem").value = "";
-      loadItems();
+      loadItems(); // Liste neu laden
+    } else {
+      console.error("Fehler beim Erstellen des Items:", await response.text());
     }
   } catch (error) {
     console.error("Fehler beim Erstellen des Items:", error);
@@ -49,16 +51,23 @@ async function createItem() {
 
 // Item aktualisieren
 async function updateItem(id) {
-  const updatedItem = prompt("Neuen Wert für das Item eingeben:");
-  if (!updatedItem) return;
+  const updatedName = prompt("Neuen Wert für das Item eingeben:");
+  if (!updatedName) return;
 
   try {
     const response = await fetch(`${apiUrl}/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(updatedItem),
+      body: JSON.stringify({ name: updatedName }), // Nur das "name"-Feld senden
     });
-    if (response.ok) loadItems();
+    if (response.ok)
+      loadItems(); // Liste neu laden, falls erfolgreich
+    else {
+      console.error(
+        "Fehler beim Aktualisieren des Items:",
+        await response.text()
+      );
+    }
   } catch (error) {
     console.error("Fehler beim Aktualisieren des Items:", error);
   }

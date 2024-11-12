@@ -1,50 +1,41 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
+using cards_against_humanity_backend.Services;
+using cards_against_humanity_backend;
 
-namespace cards_against_humanity_backend
+var builder = WebApplication.CreateBuilder(args);
+
+// CORS-Richtlinie hinzufügen
+builder.Services.AddCors(options =>
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            Console.WriteLine("Die Anwendung wurde gestartet und l�uft im Docker-Container.");
+    options.AddPolicy("AllowFrontendApp",
+        policy => policy.WithOrigins("http://localhost:3000")
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
 
-            var builder = WebApplication.CreateBuilder(args);
+// Konfiguration für die Datenbankeinstellungen
+builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettings"));
+builder.Services.AddSingleton<MongoDbService>();
 
-            // Add services to the container
-            builder.Services.AddControllers();
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
+// Weitere Dienste und Middleware hinzufügen
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
-            // Add CORS policy (Allow all origins, headers, and methods)
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowAll", policy =>
-                    policy.AllowAnyOrigin()
-                          .AllowAnyMethod()
-                          .AllowAnyHeader());
-            });
+var app = builder.Build();
 
-            var app = builder.Build();
+// CORS-Middleware aktivieren
+app.UseCors("AllowFrontendApp");
 
-            // Configure the HTTP request pipeline
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-
-            app.UseHttpsRedirection();
-
-            // Use CORS policy
-            app.UseCors("AllowAll");
-
-            app.UseAuthorization();
-
-            app.MapControllers();
-
-            app.Run();
-        }
-    }
+// Middleware-Konfiguration
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+
+app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();
