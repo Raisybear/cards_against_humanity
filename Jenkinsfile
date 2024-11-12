@@ -9,11 +9,10 @@ pipeline {
     stages {
          stage('Checkout') {
             steps {
-                git branch: 'main', 
-                    url: 'https://github.com/Raisybear/cards_against_humanity'
+                git branch: 'main', url: 'https://github.com/Raisybear/cards_against_humanity'
             }
-        }   
-  
+        }
+
         stage('Backend Build') {
             steps {
                 dir('Game/cards_against_humanity_backend') {
@@ -58,7 +57,10 @@ pipeline {
 
     post {
         always {
-            sh 'docker-compose -f docker-compose.yml down'  // Stoppt und entfernt die Container nach Abschluss der Pipeline.
+            node {
+                // Docker Compose herunterfahren nach Abschluss der Pipeline
+                sh 'docker-compose -f docker-compose.yml down'  // Stoppt und entfernt die Container nach Abschluss der Pipeline.
+            }
         }
     }
 }
