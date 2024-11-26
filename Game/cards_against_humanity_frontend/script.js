@@ -1,5 +1,4 @@
-// Setze die URL des Backends auf den richtigen Port
-const apiUrl = "http://localhost:5000/api/test"; // Korrekte API-URL
+const apiUrl = "http://backend/api/test";
 
 // Alle Items laden und anzeigen
 async function loadItems() {

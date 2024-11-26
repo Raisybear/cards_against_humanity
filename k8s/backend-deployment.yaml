@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: cards-against-humanity
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cards-against-humanity
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: cards-against-humanity
+        tier: backend
+    spec:
+      containers:
+      - name: backend
+        image: robinsacher/cards_against_humanity_backend:latest
+        ports:
+        - containerPort: 80
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: Development
+        - name: ConnectionStrings__MongoDB
+          value: mongodb://mongadmin:12345678@mongo:27017/mydb?authSource=admin
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+spec:
+  selector:
+    app: cards-against-humanity
+    tier: backend
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80

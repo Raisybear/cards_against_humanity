@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongo
+  labels:
+    app: cards-against-humanity
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cards-against-humanity
+      tier: database
+  template:
+    metadata:
+      labels:
+        app: cards-against-humanity
+        tier: database
+    spec:
+      containers:
+        - name: mongo
+          image: mongo:7.0
+          ports:
+            - containerPort: 27017
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              value: "mongadmin"
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              value: "12345678"
+          volumeMounts:
+            - name: mongodata
+              mountPath: /data/db
+      volumes:
+        - name: mongodata
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+spec:
+  selector:
+    app: cards-against-humanity
+    tier: database
+  ports:
+    - protocol: TCP
+      port: 27017
+      targetPort: 27017
