@@ -17,15 +17,16 @@ spec:
         tier: backend
     spec:
       containers:
-      - name: backend
-        image: robinsacher/cards_against_humanity_backend:latest
-        ports:
-        - containerPort: 80
-        env:
-        - name: ASPNETCORE_ENVIRONMENT
-          value: Development
-        - name: ConnectionStrings__MongoDB
-          value: mongodb://mongadmin:12345678@mongo:27017/mydb?authSource=admin
+        - name: backend
+          image: robinsacher/cards_against_humanity_backend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          env:
+            - name: ASPNETCORE_ENVIRONMENT
+              value: Development
+            - name: ConnectionStrings__MongoDB
+              value: mongodb://mongo:27017/mydb
 ---
 apiVersion: v1
 kind: Service
@@ -36,6 +37,8 @@ spec:
     app: cards-against-humanity
     tier: backend
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 80
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 30001 # Hier wird der NodePort hinzugefügt
+  type: NodePort # Typ wird auf NodePort geändert

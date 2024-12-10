@@ -2,6 +2,7 @@ version: "3.8"
 
 services:
   backend:
+    image: robinsacher/cards_against_humanity_backend:latest
     build:
       context: ./Game/cards_against_humanity_backend
       dockerfile: Dockerfile
@@ -14,6 +15,7 @@ services:
       - mongo
 
   frontend:
+    image: robinsacher/cards_against_humanity_frontend:latest
     build:
       context: ./Game/cards_against_humanity_frontend
       dockerfile: Dockerfile

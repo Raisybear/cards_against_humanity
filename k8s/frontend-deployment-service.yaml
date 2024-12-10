@@ -17,10 +17,11 @@ spec:
         tier: frontend
     spec:
       containers:
-      - name: frontend
-        image: robinsacher/cards_against_humanity_frontend:latest
-        ports:
-        - containerPort: 80
+        - name: frontend
+          image: robinsacher/cards_against_humanity_frontend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
 ---
 apiVersion: v1
 kind: Service
@@ -31,7 +32,8 @@ spec:
     app: cards-against-humanity
     tier: frontend
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 80
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+      nodePort: 31098
   type: NodePort

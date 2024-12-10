@@ -7,11 +7,13 @@ var builder = WebApplication.CreateBuilder(args);
 // CORS-Richtlinie hinzufügen
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowFrontendApp",
-        policy => policy.WithOrigins("http://localhost:3000")
-            .AllowAnyMethod()
-            .AllowAnyHeader());
+    options.AddPolicy("AllowFrontendApp", policy =>
+        policy.AllowAnyOrigin() // Alle Origins erlauben (Entwicklung)
+              .AllowAnyMethod() // Alle HTTP-Methoden erlauben (GET, POST, etc.)
+              .AllowAnyHeader() // Alle Header erlauben
+    );
 });
+
 
 // Konfiguration für die Datenbankeinstellungen
 builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettings"));
