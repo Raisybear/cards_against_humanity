@@ -1,4 +1,4 @@
-const apiUrl = "http://127.0.0.1:54626/api/test";
+const apiUrl = "http://127.0.0.1:62399/api/test";
 
 // Alle Items laden und anzeigen
 async function loadItems() {

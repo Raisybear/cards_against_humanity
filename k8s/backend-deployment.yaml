@@ -5,7 +5,7 @@ metadata:
   labels:
     app: cards-against-humanity
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: cards-against-humanity
@@ -27,6 +27,13 @@ spec:
               value: Development
             - name: ConnectionStrings__MongoDB
               value: mongodb://mongo:27017/mydb
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
 ---
 apiVersion: v1
 kind: Service
@@ -40,5 +47,5 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 80
-      nodePort: 30001 # Hier wird der NodePort hinzugefügt
-  type: NodePort # Typ wird auf NodePort geändert
+      nodePort: 30001
+  type: NodePort
