@@ -60,8 +60,6 @@ pipeline {
     }
 
     post {
-        always {
-            // Kann zum Bereinigen nach dem Deployment verwendet werden, wenn nötig
-        }
+        // Entfernt den leeren always-Block, oder du kannst hier eine Aktion hinzufügen, falls du nach dem Deployment noch etwas tun möchtest
     }
 }
