@@ -2,33 +2,67 @@ pipeline {
     agent any
 
     environment {
-        BACKEND_IMAGE = "backend_image"
-        FRONTEND_IMAGE = "frontend_image"
+        BACKEND_IMAGE = "robinsacher/cards_against_humanity_backend:latest"
+        FRONTEND_IMAGE = "robinsacher/cards_against_humanity_frontend:latest"
     }
 
     stages {
-         stage('Checkout') {
+        stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/Raisybear/cards_against_humanity.git'
             }
-        }   
-  
-        stage('Backend Build') {
+        }
+
+        stage('Build Backend Docker Image') {
             steps {
                 dir('Game/cards_against_humanity_backend') {
                     script {
-                        sh 'docker build -t ${BACKEND_IMAGE} .'  // Baut das Docker-Image für das Backend.
+                        // Docker Image bauen, um es in Kubernetes zu verwenden
+                        sh 'docker build -t ${BACKEND_IMAGE} .'
                     }
                 }
             }
         }
 
-        stage('Frontend Build') {
+        stage('Build Frontend Docker Image') {
             steps {
                 dir('Game/cards_against_humanity_frontend') {
                     script {
-                        sh 'docker build -t ${FRONTEND_IMAGE} .'  // Baut das Docker-Image für das Frontend.
+                        // Docker Image bauen, um es in Kubernetes zu verwenden
+                        sh 'docker build -t ${FRONTEND_IMAGE} .'
                     }
+                }
+            }
+        }
+
+        stage('Push Backend Docker Image') {
+            steps {
+                script {
+                    // Push das Backend Docker Image ins Registry
+                    sh 'docker push ${BACKEND_IMAGE}'
+                }
+            }
+        }
+
+        stage('Push Frontend Docker Image') {
+            steps {
+                script {
+                    // Push das Frontend Docker Image ins Registry
+                    sh 'docker push ${FRONTEND_IMAGE}'
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    // Stelle sicher, dass kubectl auf den richtigen Kubernetes-Cluster zugreift
+                    sh 'kubectl apply -f k8s/backend-deployment.yaml'
+                    sh 'kubectl apply -f k8s/frontend-deployment.yaml'
+                    sh 'kubectl apply -f k8s/mongo-deployment.yaml'
+                    sh 'kubectl apply -f k8s/backend-service.yaml'
+                    sh 'kubectl apply -f k8s/frontend-service.yaml'
+                    sh 'kubectl apply -f k8s/mongo-service.yaml'
                 }
             }
         }
@@ -45,19 +79,17 @@ pipeline {
                 }
             }
         }
-
-        stage('Deploy with Docker Compose') {
-            steps {
-                script {
-                    sh 'docker-compose -f docker-compose.yml up -d'  // Startet die Container im Hintergrund.
-                }
-            }
-        }
     }
 
     post {
         always {
-            sh 'docker-compose -f docker-compose.yml down'  // Stoppt und entfernt die Container nach Abschluss der Pipeline.
+            // Optional: Kubernetes-Ressourcen nach Abschluss der Pipeline löschen
+            sh 'kubectl delete -f k8s/backend-deployment.yaml'
+            sh 'kubectl delete -f k8s/frontend-deployment.yaml'
+            sh 'kubectl delete -f k8s/mongo-deployment.yaml'
+            sh 'kubectl delete -f k8s/backend-service.yaml'
+            sh 'kubectl delete -f k8s/frontend-service.yaml'
+            sh 'kubectl delete -f k8s/mongo-service.yaml'
         }
     }
 }
