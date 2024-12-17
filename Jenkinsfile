@@ -4,15 +4,16 @@ pipeline {
     environment {
         BACKEND_IMAGE = "backend_image"
         FRONTEND_IMAGE = "frontend_image"
+        K8S_NAMESPACE = "default"  // Beispiel Namespace, du kannst ihn nach Bedarf anpassen
     }
 
     stages {
-         stage('Checkout') {
+        stage('Checkout') {
             steps {
                 git branch: 'main', url: 'https://github.com/Raisybear/cards_against_humanity.git'
             }
         }   
-  
+
         stage('Backend Build') {
             steps {
                 dir('Game/cards_against_humanity_backend') {
@@ -46,10 +47,13 @@ pipeline {
             }
         }
 
-        stage('Deploy with Docker Compose') {
+        stage('Deploy to Kubernetes') {
             steps {
                 script {
-                    sh 'docker-compose -f docker-compose.yml up -d'  // Startet die Container im Hintergrund.
+                    // Stellen Sie sicher, dass kubectl auf dem Jenkins-Agenten verfügbar ist und auf das Cluster zugreifen kann
+                    sh 'kubectl apply -f Game/k8s/mongo-deployment.yaml --namespace=${K8S_NAMESPACE}'  // MongoDB Deployment
+                    sh 'kubectl apply -f Game/k8s/backend-deployment.yaml --namespace=${K8S_NAMESPACE}'  // Backend Deployment
+                    sh 'kubectl apply -f Game/k8s/frontend-deployment-service.yaml --namespace=${K8S_NAMESPACE}'  // Frontend Deployment und Service
                 }
             }
         }
@@ -57,7 +61,7 @@ pipeline {
 
     post {
         always {
-            sh 'docker-compose -f docker-compose.yml down'  // Stoppt und entfernt die Container nach Abschluss der Pipeline.
+            // Kann zum Bereinigen nach dem Deployment verwendet werden, wenn nötig
         }
     }
 }
