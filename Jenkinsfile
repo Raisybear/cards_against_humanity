@@ -9,7 +9,7 @@ pipeline {
     stages {
          stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/robinsacher/cards_against_humanity.git'
+                git branch: 'main', url: 'https://github.com/Raisybear/cards_against_humanity.git'
             }
         }   
   
