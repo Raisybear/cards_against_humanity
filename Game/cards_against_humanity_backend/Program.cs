@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Options;
 using cards_against_humanity_backend.Services;
 using cards_against_humanity_backend;
+using CardsAgainstHumanity.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,10 @@ builder.Services.AddCors(options =>
 // Konfiguration für die Datenbankeinstellungen
 builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettings"));
 builder.Services.AddSingleton<MongoDbService>();
+
+builder.Services.AddSingleton<GameService>();
+builder.Services.AddSingleton<CardService>();
+
 
 // Weitere Dienste und Middleware hinzufügen
 builder.Services.AddControllers();
